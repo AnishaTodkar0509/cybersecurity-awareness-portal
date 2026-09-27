@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 mt-4">
+        <div class="card shadow border-0">
+            <div class="card-header bg-warning text-dark p-3">
+                <h4 class="mb-0 fw-bold"><span class="badge bg-light text-dark me-2">CO4 Assessment</span> Case Scenario Analysis</h4>
+            </div>
+            <div class="card-body p-4">
+                
+                <div class="alert alert-secondary border-start border-4 border-dark mb-4">
+                    <h5 class="fw-bold"><i class="bi bi-file-text me-2"></i>Read the Scenario:</h5>
+                    <p class="mb-0 fs-5 lh-base text-dark">{{ scenario.scenario_text }}</p>
+                </div>
+                
+                <form method="POST">
+                    {% for q in scenario.questions %}
+                    {% set q_idx = loop.index0 %}
+                    <div class="card mb-4 border-0 bg-light">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-3">{{ loop.index }}. {{ q.q }}</h6>
+                            
+                            <div class="list-group">
+                                {% for option in q.options %}
+                                <label class="list-group-item list-group-item-action bg-white d-flex gap-3">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="q_{{ q_idx }}" value="{{ option }}" required>
+                                    <span class="small">{{ option }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('co4_offences') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-warning fw-bold px-5">Submit Assessment</button>
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

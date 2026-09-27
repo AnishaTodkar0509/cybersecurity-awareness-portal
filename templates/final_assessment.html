@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9 mt-4">
+        <div class="card shadow border-0">
+            <div class="card-header bg-primary text-white p-3">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-shield-lock-fill me-2"></i>Final Cybersecurity Assessment</h4>
+            </div>
+            <div class="card-body p-4 bg-light">
+                <div class="alert alert-info border-0 border-start border-4 border-info">
+                    This assessment tests your knowledge across all six Course Outcomes (CO1 - CO6). Your scores will be recorded and displayed on the CO Coverage Dashboard.
+                </div>
+                
+                <form method="POST">
+                    {% for q in questions %}
+                    {% set q_idx = loop.index0 %}
+                    <div class="card mb-4 border-0 shadow-sm border-top border-4 border-primary">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-3"><span class="badge bg-secondary me-2">{{ q.co }}</span>{{ loop.index }}. {{ q.q }}</h6>
+                            
+                            <div class="row g-2">
+                                {% for option in q.options %}
+                                <div class="col-md-6">
+                                    <label class="list-group-item list-group-item-action bg-white rounded border d-flex gap-3 h-100 align-items-center p-3">
+                                        <input class="form-check-input flex-shrink-0 m-0" type="radio" name="q_{{ q_idx }}" value="{{ option }}" required>
+                                        <span class="small m-0">{{ option }}</span>
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-primary fw-bold px-5">Submit Final Assessment</button>
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

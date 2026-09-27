@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 mt-4">
+        <div class="card shadow border-0">
+            <div class="card-header bg-danger text-white p-3">
+                <h4 class="mb-0 fw-bold"><span class="badge bg-light text-danger me-2">CO5</span> {{ quiz.title }}</h4>
+            </div>
+            <div class="card-body p-4 bg-light">
+                
+                <form method="POST">
+                    {% for q in quiz.questions %}
+                    {% set q_idx = loop.index0 %}
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-3">{{ loop.index }}. {{ q.q }}</h6>
+                            
+                            <div class="list-group">
+                                {% for option in q.options %}
+                                <label class="list-group-item list-group-item-action d-flex gap-3">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="q_{{ q_idx }}" value="{{ option }}" required>
+                                    <span class="small">{{ option }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('co5_mobile') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-danger fw-bold px-5">Submit Quiz</button>
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .hover-reveal:hover .hidden-url { display: inline !important; }
+    .hidden-url { display: none; font-size: 0.85em; }
+    .phish-spot { cursor: pointer; transition: all 0.2s; border: 2px solid transparent; }
+    .phish-spot:hover { border: 2px dashed #dc3545; border-radius: 4px; background-color: rgba(220,53,69,0.05); }
+    .phish-found { border: 2px solid #dc3545 !important; background-color: rgba(220,53,69,0.1) !important; }
+</style>
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h2 class="fw-bold"><span class="badge bg-primary">CO1</span> Threat Identification</h2>
+        <p class="text-muted">Identify various software threats and attacks.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('co1_quiz') }}" class="btn btn-warning fw-bold shadow-sm">Take CO1 Quiz</a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 g-4 mb-5">
+    {% for threat in threats %}
+    <div class="col">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                <h4 class="card-title text-primary fw-bold mb-0">{{ threat.name }}</h4>
+                <span class="badge bg-secondary mb-2">{{ threat.category }}</span>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ threat.description }}</p>
+                
+                <h6 class="fw-bold mt-3 text-danger">Symptoms:</h6>
+                <p class="small">{{ threat.symptoms }}</p>
+                
+                <h6 class="fw-bold mt-3 text-success">Prevention:</h6>
+                <p class="small">{{ threat.prevention }}</p>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center">
+        <p>No threats found in the database.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- NEW SIMULATOR SECTION -->
+<div class="row mt-5 mb-5">
+    <div class="col-12">
+        <div class="card shadow border-0 border-top border-4 border-danger">
+            <div class="card-header bg-white p-3">
+                <h4 class="mb-0 fw-bold text-danger"><i class="bi bi-envelope-exclamation me-2"></i>Interactive Simulator: Phishing Email Analyzer</h4>
+                <p class="text-muted small mb-0 mt-1">Click on the suspicious elements (red flags) in this email to analyze the threat.</p>
+            </div>
+            <div class="card-body p-4 bg-light">
+                <div class="alert alert-info text-center" id="sim-instructions">
+                    Find and click the <strong>3 security red flags</strong> hidden in the email below.
+                </div>
+                
+                <div class="card mx-auto shadow-sm" style="max-width: 700px;">
+                    <div class="card-header bg-white border-bottom p-3">
+                        <div class="d-flex justify-content-between align-items-center phish-spot" id="flag1" onclick="findFlag(1, 'Fake Sender Address', 'The email claims to be from HDFC Bank, but the domain is @hdfc-security-update.com instead of the official @hdfcbank.com.')">
+                            <div>
+                                <strong>From:</strong> HDFC Bank Support &lt;alerts@hdfc-security-update.com&gt;<br>
+                                <strong class="text-muted small">To:</strong> You
+                            </div>
+                            <span class="badge bg-secondary">Inbox</span>
+                        </div>
+                        <h5 class="mt-3 mb-0 fw-bold">URGENT: Your Bank Account Will Be Suspended in 24 Hours</h5>
+                    </div>
+                    <div class="card-body p-4 bg-white" style="font-family: Arial, sans-serif;">
+                        <p>Dear Customer,</p>
+                        <p>We have detected unusual login activity on your account. For your security, your account will be temporarily suspended in exactly 24 hours.</p>
+                        
+                        <div class="phish-spot my-4 p-2 text-center" id="flag2" onclick="findFlag(2, 'Urgent/Threatening Language', 'Phishing emails create a false sense of urgency (panic) so you act quickly without thinking or verifying the source.')">
+                            <span class="fw-bold text-danger">Failure to verify your identity immediately will result in permanent account closure and a ₹5,000 penalty fee.</span>
+                        </div>
+                        
+                        <p>Please click the secure link below to verify your identity and cancel the suspension:</p>
+                        
+                        <div class="text-center my-4">
+                            <div class="phish-spot d-inline-block p-2 hover-reveal" id="flag3" onclick="findFlag(3, 'Malicious Hidden URL', 'Hovering over the button reveals the real destination (http://bit.ly/random-scam-link), which does not go to the official bank website.')">
+                                <a href="javascript:void(0)" class="btn btn-primary px-4 py-2 fw-bold" style="text-decoration: none;">Verify My Account Now</a>
+                                <br>
+                                <span class="hidden-url text-danger fw-bold mt-1 d-block">Points to: http://bit.ly/random-scam-link</span>
+                            </div>
+                        </div>
+                        
+                        <p>Thank you,<br>HDFC Bank Security Team</p>
+                    </div>
+                </div>
+                
+                <!-- Feedback Area -->
+                <div class="mt-4" id="sim-feedback" style="display: none;">
+                    <h5 class="fw-bold border-bottom pb-2">Analysis Results</h5>
+                    <ul class="list-group" id="flag-list">
+                        <!-- Discovered flags will appear here -->
+                    </ul>
+                    <div class="alert alert-success mt-3 fw-bold text-center" id="sim-success" style="display: none;">
+                        🎉 Excellent! You found all the red flags. You successfully identified the phishing threat!
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let foundFlags = new Set();
+    const totalFlags = 3;
+    
+    function findFlag(id, title, explanation) {
+        if (foundFlags.has(id)) return;
+        
+        foundFlags.add(id);
+        
+        // Highlight the spot
+        document.getElementById('flag' + id).classList.add('phish-found');
+        
+        // Show feedback area
+        document.getElementById('sim-feedback').style.display = 'block';
+        
+        // Add to list
+        const list = document.getElementById('flag-list');
+        const li = document.createElement('li');
+        li.className = 'list-group-item bg-white border-start border-4 border-danger shadow-sm mb-2';
+        li.innerHTML = `<h6 class="fw-bold text-danger mb-1"><i class="bi bi-flag-fill me-2"></i>${title}</h6><p class="small text-muted mb-0">${explanation}</p>`;
+        list.appendChild(li);
+        
+        // Update instructions
+        const remaining = totalFlags - foundFlags.size;
+        const instr = document.getElementById('sim-instructions');
+        if (remaining > 0) {
+            instr.innerHTML = `Great job! Find <strong>${remaining} more</strong> security red flags.`;
+            instr.className = 'alert alert-warning text-center';
+        } else {
+            instr.style.display = 'none';
+            document.getElementById('sim-success').style.display = 'block';
+        }
+    }
+</script>
+
+{% endblock %}

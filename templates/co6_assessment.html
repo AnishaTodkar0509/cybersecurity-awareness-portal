@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9 mt-4">
+        <div class="card shadow border-0">
+            <div class="card-header bg-dark text-white p-3">
+                <h4 class="mb-0 fw-bold"><span class="badge bg-light text-dark me-2">CO6</span> Legal Scenario Assessment</h4>
+            </div>
+            <div class="card-body p-4 bg-light">
+                
+                <form method="POST">
+                    {% for scenario in scenarios %}
+                    <div class="card mb-5 border-0 shadow-sm border-top border-4 border-secondary">
+                        <div class="card-header bg-white pt-4 pb-2 border-0">
+                            <h5 class="fw-bold"><i class="bi bi-file-earmark-text text-secondary me-2"></i>Case Scenario {{ loop.index }}</h5>
+                            <p class="mb-0 fs-6 text-muted lh-base fst-italic">"{{ scenario.scenario_text }}"</p>
+                        </div>
+                        <div class="card-body bg-light">
+                            {% set s_idx = loop.index0 %}
+                            {% for q in scenario.questions %}
+                            {% set q_idx = loop.index0 %}
+                            <div class="mb-4 {% if not loop.last %}border-bottom pb-4{% endif %}">
+                                <h6 class="fw-bold mb-3">{{ loop.index }}. {{ q.q }}</h6>
+                                
+                                <div class="row g-2">
+                                    {% for option in q.options %}
+                                    <div class="col-md-6">
+                                        <label class="list-group-item list-group-item-action bg-white rounded border d-flex gap-3 h-100 align-items-center p-3">
+                                            <input class="form-check-input flex-shrink-0 m-0" type="radio" name="s{{ s_idx }}_q{{ q_idx }}" value="{{ option }}" required>
+                                            <span class="small m-0">{{ option }}</span>
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('co6_law') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-dark fw-bold px-5">Submit Legal Review</button>
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

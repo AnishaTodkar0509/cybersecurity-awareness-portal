@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .sim-profile-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    .sim-spot { cursor: pointer; transition: all 0.2s; border: 2px solid transparent; position: relative; }
+    .sim-spot:hover { border: 2px dashed #ffc107; border-radius: 5px; background-color: rgba(255,193,7,0.1); }
+    .sim-found { border: 2px solid #ffc107 !important; background-color: rgba(255,193,7,0.15) !important; }
+</style>
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h2 class="fw-bold"><span class="badge bg-warning text-dark">CO4</span> Cyber Offence Analysis</h2>
+        <p class="text-muted">Analyze different types of cyber offences through realistic scenarios.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('co4_assessment') }}" class="btn btn-warning fw-bold shadow-sm">Scenario Assessment</a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Back</a>
+    </div>
+</div>
+
+<div class="accordion shadow-sm" id="offencesAccordion">
+    {% for offence in offences %}
+    <div class="accordion-item border-0 border-bottom">
+        <h2 class="accordion-header" id="heading{{ loop.index }}">
+            <button class="accordion-button {{ 'collapsed' if not loop.first else '' }} fw-bold text-dark bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}">
+                {{ loop.index }}. {{ offence.title }}
+            </button>
+        </h2>
+        <div id="collapse{{ loop.index }}" class="accordion-collapse collapse {{ 'show' if loop.first else '' }}" data-bs-parent="#offencesAccordion">
+            <div class="accordion-body bg-light">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <h6 class="text-primary fw-bold">Definition</h6>
+                        <p class="small">{{ offence.definition }}</p>
+                        
+                        <h6 class="text-danger fw-bold mt-3">How it Occurs</h6>
+                        <p class="small">{{ offence.how_it_occurs }}</p>
+                        
+                        <div class="p-3 bg-white border-start border-4 border-warning rounded mt-3 shadow-sm">
+                            <h6 class="fw-bold"><i class="bi bi-book me-2"></i>Example Scenario</h6>
+                            <p class="small mb-0 text-muted fst-italic">{{ offence.scenario }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold"><i class="bi bi-exclamation-triangle text-danger me-1"></i> Warning Signs</h6>
+                        <p class="small text-muted">{{ offence.warning_signs }}</p>
+                        
+                        <h6 class="fw-bold"><i class="bi bi-shield-check text-success me-1"></i> Prevention</h6>
+                        <p class="small text-muted">{{ offence.prevention }}</p>
+                        
+                        <h6 class="fw-bold"><i class="bi bi-life-preserver text-info me-1"></i> What a victim should do</h6>
+                        <p class="small text-muted">{{ offence.action }}</p>
+                        
+                        <h6 class="fw-bold text-secondary mt-3">Impact</h6>
+                        <p class="small text-muted">{{ offence.impact }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- NEW SIMULATOR SECTION: CO4 -->
+<div class="row mt-5 mb-5">
+    <div class="col-12">
+        <div class="card shadow border-0 border-top border-4 border-warning">
+            <div class="card-header bg-white p-3">
+                <h4 class="mb-0 fw-bold text-dark"><i class="bi bi-person-bounding-box text-warning me-2"></i>Simulator: Social Media Identity Theft</h4>
+                <p class="text-muted small mb-0 mt-1">Spot the 3 red flags in this suspicious social media profile.</p>
+            </div>
+            <div class="card-body p-4 bg-light">
+                <div class="alert alert-warning text-center" id="co4-instructions">
+                    Find and click the <strong>3 identity theft indicators</strong> hidden in the profile below.
+                </div>
+                
+                <div class="card mx-auto shadow-sm overflow-hidden" style="max-width: 600px; border-radius: 12px;">
+                    <!-- Cover Photo Area -->
+                    <div class="bg-secondary" style="height: 120px;"></div>
+                    
+                    <div class="card-body px-4 pb-4 bg-white" style="margin-top: -50px;">
+                        <div class="d-flex align-items-end mb-3">
+                            <div class="bg-dark sim-profile-img d-flex align-items-center justify-content-center text-white fs-1 fw-bold">R</div>
+                            <div class="ms-3 pb-2">
+                                <h4 class="fw-bold mb-0">Rahul Sharma <i class="bi bi-patch-check-fill text-primary ms-1" style="font-size: 0.8rem;"></i></h4>
+                                <div class="text-muted small">Joined Yesterday</div>
+                            </div>
+                        </div>
+                        
+                        <div class="sim-spot p-2 mb-3 rounded" id="co4-flag1" onclick="findCo4Flag(1, 'Brand New Account for an Old Friend', 'The account says Joined Yesterday, but you have known Rahul for years. Scammers often clone profiles and create fresh accounts to target the victim\'s friends list.')">
+                            <i class="bi bi-info-circle me-2 text-muted"></i> <strong>Joined:</strong> Yesterday (0 friends in common)
+                        </div>
+                        
+                        <div class="border rounded p-3 bg-light mt-4">
+                            <h6 class="fw-bold border-bottom pb-2">Recent Post</h6>
+                            <p class="mb-2">Hey guys, I am in a huge emergency right now and my G-Pay is blocked. Can someone please transfer ₹2,000 to my friend's account immediately? I will return it by tonight! Please DM me!</p>
+                            
+                            <div class="sim-spot p-2 mt-2 rounded bg-white border" id="co4-flag2" onclick="findCo4Flag(2, 'Urgent Request for Money', 'The classic social engineering hook: creating an emergency scenario to bypass your logical thinking and demanding immediate money transfer.')">
+                                <strong class="text-danger">Action Required:</strong> Immediate Financial Transfer via UPI
+                            </div>
+                            
+                            <div class="sim-spot p-2 mt-2 rounded bg-white border" id="co4-flag3" onclick="findCo4Flag(3, 'Third-Party Bank Account', 'Asking to send money to a friend\'s account instead of their own. This is because the scammer does not have access to Rahul\'s real bank account.')">
+                                <strong>UPI ID provided:</strong> unknown_person_459@ybl
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feedback Area -->
+                <div class="mt-4" id="co4-feedback" style="display: none;">
+                    <h5 class="fw-bold border-bottom pb-2">Identified Flags</h5>
+                    <ul class="list-group" id="co4-flag-list"></ul>
+                    <div class="alert alert-success mt-3 fw-bold text-center" id="co4-success" style="display: none;">
+                        🎉 Great job! You successfully identified the cloned profile scam before losing any money!
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let co4Found = new Set();
+    const co4Total = 3;
+    
+    function findCo4Flag(id, title, explanation) {
+        if (co4Found.has(id)) return;
+        co4Found.add(id);
+        
+        document.getElementById('co4-flag' + id).classList.add('sim-found');
+        document.getElementById('co4-feedback').style.display = 'block';
+        
+        const list = document.getElementById('co4-flag-list');
+        const li = document.createElement('li');
+        li.className = 'list-group-item bg-white border-start border-4 border-warning shadow-sm mb-2';
+        li.innerHTML = `<h6 class="fw-bold text-warning text-dark mb-1"><i class="bi bi-search me-2"></i>${title}</h6><p class="small text-muted mb-0">${explanation}</p>`;
+        list.appendChild(li);
+        
+        const remaining = co4Total - co4Found.size;
+        const instr = document.getElementById('co4-instructions');
+        if (remaining > 0) {
+            instr.innerHTML = `Great! Find <strong>${remaining} more</strong> indicator(s).`;
+        } else {
+            instr.style.display = 'none';
+            document.getElementById('co4-success').style.display = 'block';
+        }
+    }
+</script>
+
+{% endblock %}

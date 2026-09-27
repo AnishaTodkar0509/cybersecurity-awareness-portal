@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h2 class="fw-bold"><span class="badge bg-secondary">CO6</span> Cyber Law & IT Act</h2>
+        <p class="text-muted">Apply cyber law for given types of cyber issues in India (IT Act, 2000).</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('co6_assessment') }}" class="btn btn-dark fw-bold shadow-sm">Legal Assessment</a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Back</a>
+    </div>
+</div>
+
+<div class="alert alert-warning shadow-sm border-0 border-start border-4 border-warning mb-4">
+    <strong>Disclaimer:</strong> This module is for educational purposes only and does not constitute legal advice. Laws may be subject to amendments.
+</div>
+
+<div class="row row-cols-1 g-4 mb-5">
+    {% for law in laws %}
+    <div class="col">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body row align-items-center">
+                <div class="col-md-3 border-end text-center py-3">
+                    <h5 class="fw-bold text-dark mb-0">{{ law.section }}</h5>
+                </div>
+                <div class="col-md-9 py-2 ps-md-4">
+                    <h5 class="fw-bold text-secondary">{{ law.title }}</h5>
+                    <p class="text-muted small mb-2">{{ law.description }}</p>
+                    <div class="d-inline-block bg-light px-3 py-1 rounded border border-danger border-opacity-25 mt-2">
+                        <span class="fw-bold text-danger small"><i class="bi bi-hammer me-1"></i> Penalty:</span>
+                        <span class="small">{{ law.penalty }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- NEW SIMULATOR SECTION: CO6 -->
+<div class="row mt-5 mb-5">
+    <div class="col-12">
+        <div class="card shadow border-0 border-top border-4 border-dark">
+            <div class="card-header bg-white p-3">
+                <h4 class="mb-0 fw-bold text-dark"><i class="bi bi-bank2 me-2"></i>Simulator: Virtual Cyber Police Station</h4>
+                <p class="text-muted small mb-0 mt-1">File a mock cybercrime complaint and watch the system generate the correct legal notice under the IT Act 2000.</p>
+            </div>
+            <div class="card-body p-4 bg-light">
+                
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="fw-bold border-bottom pb-2 mb-3">File Complaint</h5>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small">Select the Offence Type</label>
+                                    <select class="form-select" id="fir-offence">
+                                        <option value="" selected disabled>Choose offence...</option>
+                                        <option value="43">Someone hacked my laptop and stole data</option>
+                                        <option value="66C">Someone stole my password and logged into my email</option>
+                                        <option value="66D">Someone created a fake profile using my name to scam friends</option>
+                                        <option value="67">Someone posted obscene/private photos of me online</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small">Victim Name</label>
+                                    <input type="text" id="fir-name" class="form-control" placeholder="Enter name">
+                                </div>
+                                
+                                <button class="btn btn-dark w-100 fw-bold mt-2" onclick="generateFIR()">Generate Legal Notice</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-7 mt-4 mt-md-0">
+                        <div class="card h-100 border-0 shadow-sm" style="background-image: linear-gradient(#fdfdfd, #f4f4f4);">
+                            <div class="card-body p-4 font-monospace" id="fir-document">
+                                <div class="text-center text-muted h-100 d-flex flex-column justify-content-center align-items-center" style="opacity: 0.5;">
+                                    <i class="bi bi-file-earmark-text display-1 mb-3"></i>
+                                    <p>Your legal document will be generated here.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const lawMap = {
+        '43': { sec: "Section 43 & 66", desc: "Unauthorized Access and Data Theft", penalty: "Imprisonment up to 3 years or fine up to ₹5 Lakh." },
+        '66C': { sec: "Section 66C", desc: "Identity Theft (Fraudulent use of password/digital signature)", penalty: "Imprisonment up to 3 years and fine up to ₹1 Lakh." },
+        '66D': { sec: "Section 66D", desc: "Cheating by Personation using a Computer Resource", penalty: "Imprisonment up to 3 years and fine up to ₹1 Lakh." },
+        '67': { sec: "Section 67", desc: "Publishing or Transmitting Obscene Material in Electronic Form", penalty: "Imprisonment up to 3 years and fine up to ₹5 Lakh." }
+    };
+    
+    function generateFIR() {
+        const offenceVal = document.getElementById('fir-offence').value;
+        const nameVal = document.getElementById('fir-name').value || "The Complainant";
+        
+        if (!offenceVal) {
+            alert("Please select an offence type first.");
+            return;
+        }
+        
+        const law = lawMap[offenceVal];
+        const date = new Date().toLocaleDateString();
+        
+        const docHtml = `
+            <div class="border-bottom border-dark pb-3 mb-4 text-center">
+                <h4 class="fw-bold mb-0 text-uppercase">Notice of Cyber Offence</h4>
+                <small class="fw-bold">Information Technology Act, 2000 (India)</small>
+            </div>
+            
+            <p><strong>Date:</strong> ${date}</p>
+            <p><strong>To Whom It May Concern,</strong></p>
+            
+            <p class="text-justify lh-base">
+                Take notice that a formal complaint has been registered on behalf of <strong>${nameVal.toUpperCase()}</strong> regarding a cybercrime incident. 
+            </p>
+            
+            <div class="p-3 border border-dark bg-white my-3">
+                <h6 class="fw-bold text-decoration-underline mb-2">Applicable Legal Provision:</h6>
+                <h5 class="fw-bold text-danger">${law.sec} of the IT Act 2000</h5>
+                <p class="mb-1"><strong>Charge:</strong> ${law.desc}</p>
+                <p class="mb-0"><strong>Prescribed Penalty:</strong> ${law.penalty}</p>
+            </div>
+            
+            <p class="text-justify lh-base">
+                Any person found guilty of committing this offence shall be liable for prosecution and strict punitive action as mandated by the cyber laws of India. Electronic records and IP addresses have been logged as digital evidence.
+            </p>
+            
+            <div class="mt-5 text-end">
+                <p class="mb-0">______________________</p>
+                <p class="small fw-bold mt-1">Generated by Simulator</p>
+            </div>
+        `;
+        
+        document.getElementById('fir-document').innerHTML = docHtml;
+    }
+</script>
+
+{% endblock %}

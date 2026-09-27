@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9 mt-4">
+        <div class="card shadow border-0">
+            <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+                <h4 class="mb-0 fw-bold">Final Assessment Results</h4>
+                <div>
+                    <span class="badge bg-light text-dark fs-6 me-2">Percentage: {{ ((score/total)*100)|round|int }}%</span>
+                    <span class="badge {{ 'bg-success' if score == total else 'bg-primary' }} fs-5">{{ score }} / {{ total }}</span>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                
+                <h5 class="fw-bold text-center mb-4">Course Outcome Breakdown</h5>
+                <div class="row row-cols-3 row-cols-md-6 g-2 mb-5 text-center">
+                    {% for co, s in co_scores.items() %}
+                    <div class="col">
+                        <div class="p-2 border rounded {{ 'bg-success text-white' if s > 0 else 'bg-danger text-white' }}">
+                            <div class="fw-bold">{{ co }}</div>
+                            <div class="fs-4">{{ s }}/1</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <h5 class="fw-bold mb-4 border-bottom pb-2">Detailed Review</h5>
+                
+                {% for r in results %}
+                <div class="card border-0 bg-light mb-3">
+                    <div class="card-body">
+                        <h6 class="fw-bold"><span class="badge bg-secondary me-2">{{ r.co }}</span>{{ r.question }}</h6>
+                        
+                        {% if r.is_correct %}
+                            <p class="text-success fw-bold mb-1"><i class="bi bi-check-circle-fill me-1"></i> Your Answer: {{ r.user_ans }}</p>
+                        {% else %}
+                            <p class="text-danger fw-bold mb-1"><i class="bi bi-x-circle-fill me-1"></i> Your Answer: {{ r.user_ans }}</p>
+                            <p class="text-success fw-bold mb-1"><i class="bi bi-check me-1"></i> Correct Answer: {{ r.correct_ans }}</p>
+                        {% endif %}
+                        
+                        <div class="bg-white p-3 mt-3 rounded border shadow-sm">
+                            <h6 class="fw-bold text-secondary mb-1">Explanation:</h6>
+                            <p class="small text-muted mb-0">{{ r.explanation }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <div class="text-center mt-5">
+                    <a href="{{ url_for('co_coverage') }}" class="btn btn-primary px-4 fw-bold shadow-sm">View CO Coverage Dashboard</a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary px-4 ms-2">Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 mt-4">
+        <div class="card shadow border-0">
+            <div class="card-header bg-primary text-white p-3">
+                <h4 class="mb-0"><span class="badge bg-light text-primary me-2">{{ co }}</span>{{ title }}</h4>
+            </div>
+            <div class="card-body p-4">
+                {% if question %}
+                <form method="POST">
+                    <input type="hidden" name="question_id" value="{{ question.id }}">
+                    
+                    <h5 class="mb-4 lh-base">{{ question.question_text }}</h5>
+                    
+                    <div class="list-group mb-4">
+                        <label class="list-group-item list-group-item-action d-flex gap-3">
+                            <input class="form-check-input flex-shrink-0" type="radio" name="answer" id="optionA" value="A" required>
+                            <span>
+                                <strong>A.</strong> {{ question.option_a }}
+                            </span>
+                        </label>
+                        <label class="list-group-item list-group-item-action d-flex gap-3">
+                            <input class="form-check-input flex-shrink-0" type="radio" name="answer" id="optionB" value="B">
+                            <span>
+                                <strong>B.</strong> {{ question.option_b }}
+                            </span>
+                        </label>
+                        <label class="list-group-item list-group-item-action d-flex gap-3">
+                            <input class="form-check-input flex-shrink-0" type="radio" name="answer" id="optionC" value="C">
+                            <span>
+                                <strong>C.</strong> {{ question.option_c }}
+                            </span>
+                        </label>
+                        <label class="list-group-item list-group-item-action d-flex gap-3">
+                            <input class="form-check-input flex-shrink-0" type="radio" name="answer" id="optionD" value="D">
+                            <span>
+                                <strong>D.</strong> {{ question.option_d }}
+                            </span>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary px-4">Submit Answer</button>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+                </form>
+                {% else %}
+                <div class="text-center py-5">
+                    <p class="lead">No questions available for this module yet.</p>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Return to Dashboard</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h2 class="fw-bold"><span class="badge bg-danger">CO5</span> Mobile & Wireless Security</h2>
+        <p class="text-muted">Understand cybercrime issues on wireless networks and mobile devices.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('co5_quiz') }}" class="btn btn-danger fw-bold shadow-sm">Take Mobile Quiz</a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Back</a>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 g-4">
+    {% for topic in topics %}
+    <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title fw-bold text-danger border-bottom pb-2"><i class="bi bi-phone-vibrate me-2"></i>{{ topic.title }}</h5>
+                <p class="card-text small mt-3">{{ topic.description }}</p>
+                <div class="p-3 bg-light rounded mt-3 border-start border-4 border-success">
+                    <h6 class="fw-bold text-success mb-1">Prevention</h6>
+                    <p class="small mb-0">{{ topic.prevention }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- NEW SIMULATOR SECTION: CO5 -->
+<div class="row mt-5 mb-5">
+    <div class="col-12">
+        <div class="card shadow border-0 border-top border-4 border-success">
+            <div class="card-header bg-white p-3">
+                <h4 class="mb-0 fw-bold text-success"><i class="bi bi-shield-lock me-2"></i>Simulator: App Permission Safety</h4>
+                <p class="text-muted small mb-0 mt-1">You are installing a simple "Flashlight & Calculator" app. Decide which permissions to Allow or Deny.</p>
+            </div>
+            <div class="card-body p-4 bg-light">
+                
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                            <div class="bg-dark text-white p-3 d-flex align-items-center">
+                                <div class="bg-light text-dark rounded-3 d-flex align-items-center justify-content-center fw-bold fs-3" style="width: 50px; height: 50px;">
+                                    <i class="bi bi-calculator"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h5 class="mb-0 fw-bold">Super Calculator & Flashlight Pro</h5>
+                                    <small class="text-white-50">Untrusted Developer Inc.</small>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="p-3 bg-light border-bottom text-center fw-bold text-muted small">
+                                    This app requires access to:
+                                </div>
+                                
+                                <ul class="list-group list-group-flush" id="perm-list">
+                                    <!-- Camera -->
+                                    <li class="list-group-item p-3 d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="fw-bold mb-0"><i class="bi bi-camera me-2 text-muted"></i>Camera</h6>
+                                            <small class="text-muted">Needed to turn on the LED Flashlight</small>
+                                        </div>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-outline-success btn-sm perm-btn" onclick="checkPerm(this, 'camera', true)">Allow</button>
+                                            <button type="button" class="btn btn-outline-danger btn-sm perm-btn" onclick="checkPerm(this, 'camera', false)">Deny</button>
+                                        </div>
+                                    </li>
+                                    <!-- Contacts -->
+                                    <li class="list-group-item p-3 d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="fw-bold mb-0"><i class="bi bi-person-lines-fill me-2 text-muted"></i>Contacts</h6>
+                                            <small class="text-muted">Read your contacts list</small>
+                                        </div>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-outline-success btn-sm perm-btn" onclick="checkPerm(this, 'contacts', true)">Allow</button>
+                                            <button type="button" class="btn btn-outline-danger btn-sm perm-btn" onclick="checkPerm(this, 'contacts', false)">Deny</button>
+                                        </div>
+                                    </li>
+                                    <!-- SMS -->
+                                    <li class="list-group-item p-3 d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="fw-bold mb-0"><i class="bi bi-chat-text me-2 text-muted"></i>SMS Messages</h6>
+                                            <small class="text-muted">Read and send text messages</small>
+                                        </div>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-outline-success btn-sm perm-btn" onclick="checkPerm(this, 'sms', true)">Allow</button>
+                                            <button type="button" class="btn btn-outline-danger btn-sm perm-btn" onclick="checkPerm(this, 'sms', false)">Deny</button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mt-4 mt-md-0">
+                        <div class="card h-100 border-0 shadow-sm bg-white">
+                            <div class="card-header bg-white pb-0 border-0">
+                                <h5 class="fw-bold">Security Analysis</h5>
+                            </div>
+                            <div class="card-body" id="perm-feedback">
+                                <p class="text-muted text-center mt-5"><i class="bi bi-arrow-left me-2"></i>Make your choices on the left to see the security impact.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const permData = {
+        'camera': { safe: true, msg: "✅ <b>Correct (Allow)</b>: A flashlight app legitimately needs Camera hardware access to turn on the LED flash." },
+        'contacts': { safe: false, msg: "🚨 <b>Correct (Deny)</b>: A calculator has NO legitimate reason to read your contacts. This is a massive privacy violation and data harvesting tactic." },
+        'sms': { safe: false, msg: "🚨 <b>Correct (Deny)</b>: If you grant SMS access, this malicious app could read your Bank OTPs and send premium-rate messages without your knowledge!" }
+    };
+    
+    function checkPerm(btn, type, userAllowed) {
+        // Update UI buttons
+        const group = btn.parentElement;
+        const buttons = group.querySelectorAll('.perm-btn');
+        buttons.forEach(b => {
+            b.classList.remove('active');
+            b.classList.add('disabled');
+        });
+        btn.classList.add('active');
+        btn.classList.remove('disabled');
+        
+        // Analyze choice
+        const isSafe = permData[type].safe;
+        const feedbackDiv = document.getElementById('perm-feedback');
+        
+        if (feedbackDiv.innerHTML.includes('Make your choices')) {
+            feedbackDiv.innerHTML = '';
+        }
+        
+        const alertBox = document.createElement('div');
+        alertBox.className = 'alert mb-2 shadow-sm ';
+        
+        if (userAllowed == isSafe) {
+            alertBox.classList.add('alert-success');
+            alertBox.innerHTML = permData[type].msg;
+        } else {
+            alertBox.classList.add('alert-danger');
+            if (userAllowed) {
+                alertBox.innerHTML = `❌ <b>Dangerous Choice!</b> You just gave a Calculator app access to your ${type.toUpperCase()}. It can now steal your data.`;
+            } else {
+                alertBox.innerHTML = `⚠️ <b>Sub-optimal</b>: You denied Camera access, meaning the Flashlight feature won't work, but at least you are safe!`;
+            }
+        }
+        
+        feedbackDiv.appendChild(alertBox);
+    }
+</script>
+
+{% endblock %}

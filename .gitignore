@@ -1,0 +1,21 @@
+# Environments
+venv/
+env/
+.env
+
+# Python specific
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Database
+*.db
+*.sqlite3
+cyberportal.db
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo

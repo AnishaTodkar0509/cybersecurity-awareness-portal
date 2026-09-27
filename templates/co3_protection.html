@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h2 class="fw-bold"><span class="badge bg-info text-dark">CO3</span> Data Protection</h2>
+        <p class="text-muted">Apply data protection techniques to secure sensitive information.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Password Strength Checker -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100 border-0 border-top border-4 border-info">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold">Password Strength Checker</h5>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted mb-4">
+                    Enter a password to evaluate its strength. 
+                    <span class="text-danger fw-bold"><i class="bi bi-shield-exclamation"></i> We do not store or transmit this password.</span>
+                </p>
+                <form action="{{ url_for('co3_protection') }}" method="POST">
+                    <input type="hidden" name="action" value="password">
+                    <div class="mb-3">
+                        <label class="form-label">Password to check</label>
+                        <input type="text" name="password" class="form-control" placeholder="Enter a test password..." required>
+                    </div>
+                    <button type="submit" class="btn btn-info text-white">Evaluate Strength</button>
+                </form>
+
+                {% if result_password %}
+                <div class="mt-4 pt-3 border-top" id="passwordResult">
+                    <h6 class="fw-bold">Result:</h6>
+                    <div class="alert alert-{{ result_password.color }} fw-bold fs-5 text-center">
+                        {{ result_password.strength }}
+                    </div>
+                    {% if result_password.feedback %}
+                    <h6 class="fw-bold text-muted mt-3">Feedback:</h6>
+                    <ul class="list-group list-group-flush">
+                        {% for item in result_password.feedback %}
+                            <li class="list-group-item bg-transparent px-0 py-1 border-0 text-muted"><i class="bi bi-arrow-right-short text-{{ result_password.color }}"></i> {{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Sensitive Data Masking -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100 border-0 border-top border-4 border-primary">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold">Sensitive Data Masking (DLP Concept)</h5>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted mb-4">
+                    Paste text containing emails, phone numbers, Aadhaar (xxxx xxxx xxxx), or credit card numbers to see Data Loss Prevention (DLP) masking in action.
+                </p>
+                <form action="{{ url_for('co3_protection') }}" method="POST">
+                    <input type="hidden" name="action" value="masking">
+                    <div class="mb-3">
+                        <label class="form-label">Sample Text</label>
+                        <textarea name="sensitive_text" class="form-control" rows="4" placeholder="e.g. My number is 9876543210 and my email is testuser@example.com." required>{{ original_text }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Identify & Mask Data</button>
+                </form>
+
+                {% if result_masking %}
+                <div class="mt-4 pt-3 border-top" id="maskingResult">
+                    <h6 class="fw-bold text-success">Protected Output:</h6>
+                    <div class="p-3 bg-light rounded text-break font-monospace border">
+                        {{ masked_text }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Theory Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-light">
+                <h5 class="mb-0 fw-bold">Core Data Protection Techniques</h5>
+            </div>
+            <div class="card-body">
+                <div class="row row-cols-1 row-cols-md-3 g-3">
+                    <div class="col">
+                        <div class="p-3 bg-light border rounded h-100">
+                            <h6 class="fw-bold">Encryption & Hashing</h6>
+                            <p class="small mb-0">Transforming readable data into unreadable formats using algorithms (like AES or RSA) and storing passwords securely via one-way hashes (like SHA-256).</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="p-3 bg-light border rounded h-100">
+                            <h6 class="fw-bold">Access Control & IAM</h6>
+                            <p class="small mb-0">Ensuring only authorized individuals have access to sensitive information using Role-Based Access Control (RBAC) and Multi-Factor Authentication (MFA).</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="p-3 bg-light border rounded h-100">
+                            <h6 class="fw-bold">Data Masking & Redaction</h6>
+                            <p class="small mb-0">Hiding specific parts of data (like credit card numbers) to protect it from unauthorized exposure while keeping the data format intact for systems.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        {% if result_password %}
+            document.getElementById("passwordResult").scrollIntoView({behavior: "smooth", block: "nearest"});
+        {% endif %}
+        {% if result_masking %}
+            document.getElementById("maskingResult").scrollIntoView({behavior: "smooth", block: "nearest"});
+        {% endif %}
+    });
+</script>
+{% endblock %}
